@@ -10,7 +10,7 @@ Scrape all Ofsted reports into custom `/data` folder
 
 Setup your Ofsted search that you want to download reports from [here](https://reports.ofsted.gov.uk/) to generate the base url to download all reports from.
 
-> Note: It will take hours to download all reports and we highly recommend targeting your search. The example below will download all the reports from Secondary Schools within a 3 mile radius from London.
+> Note: It will take hours to download all reports and we highly recommend targeting your search. The example below will download all the reports from Secondary Schools within a 5 mile radius from London.
 
 Run the main Python script giving your base url to download all report pdf's into a folder.
 
