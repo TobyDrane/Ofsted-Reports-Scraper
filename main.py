@@ -1,5 +1,6 @@
 import os
 import requests
+import time
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 import typer
@@ -9,6 +10,32 @@ data = {"pages": [], "schools": []}
 
 if not os.path.exists("./data"):
     os.makedirs("./data")
+
+
+def make_request(url, max_retries=5, delay_seconds=5):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+
+    for attempt in range(max_retries):
+        response = requests.get(url, headers=headers)
+
+        print(response.status_code)
+
+        if response.status_code == 403:
+            print(
+                f"Received 403 Forbidden. Retrying... (Attempt {attempt + 1}/{max_retries})"
+            )
+            time.sleep(delay_seconds)
+        elif response.status_code == 200:
+            return response
+        else:
+            # Handle other status codes if needed
+            print(f"Received unexpected status code: {response.status_code}")
+            break
+
+    print(f"Failed to retrieve data after {max_retries} attempts. Exiting.")
+    return None
 
 
 def extract_next_page_url(url):
@@ -47,7 +74,7 @@ def extract_school_pages(url):
 
 
 def extract_reports(url):
-    page = requests.get(url)
+    page = make_request(url)
     soup = BeautifulSoup(page.content, "html.parser")
     school = soup.find("h1", class_="heading--title").text.strip()
     timeline_ol = soup.find("ol", class_="timeline")
@@ -77,9 +104,10 @@ def extract_reports(url):
             filename = f"{school}_{result_string}.pdf"
             filename = filename.replace(" ", "-").lower()
 
-            response = requests.get(pdf_url)
-            with open("./data/" + filename, "wb") as pdf_file:
-                pdf_file.write(response.content)
+            response = make_request(pdf_url)
+            if response:
+                with open("./data/" + filename, "wb") as pdf_file:
+                    pdf_file.write(response.content)
         except:
             continue
 
