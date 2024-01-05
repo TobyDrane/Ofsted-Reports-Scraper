@@ -20,8 +20,6 @@ def make_request(url, max_retries=5, delay_seconds=5):
     for attempt in range(max_retries):
         response = requests.get(url, headers=headers)
 
-        print(response.status_code)
-
         if response.status_code == 403:
             print(
                 f"Received 403 Forbidden. Retrying... (Attempt {attempt + 1}/{max_retries})"
