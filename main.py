@@ -10,6 +10,7 @@ data = {"pages": [], "schools": []}
 if not os.path.exists("./data"):
     os.makedirs("./data")
 
+
 def extract_next_page_url(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
@@ -105,6 +106,8 @@ def main(url: str):
         position=0,
         leave=True,
     ):
+        extract_reports(school)
+
 
 if __name__ == "__main__":
     typer.run(main)
